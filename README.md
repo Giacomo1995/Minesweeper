@@ -1,2 +1,2 @@
 # Minesweeper
-A clone of the famous Minesweeper game made in Java.
+A clone of the famous **Minesweeper** game made in Java.
