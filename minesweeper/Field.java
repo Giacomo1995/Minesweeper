@@ -2,6 +2,7 @@ package minesweeper;
 
 // Imports
 import java.util.Random;
+import java.awt.Color;
 
 
 public class Field {
@@ -63,6 +64,31 @@ public class Field {
         }
 
         return count;
+    }
+
+
+    // Method to returns the color relative to the number of bombs around a specific cell
+    protected static Color getColor(int n) {
+        switch(n) {
+            case 1:
+                return Color.blue;
+            case 2:
+                return Color.green;
+            case 3:
+                return Color.red;
+            case 4:
+                return Color.black;
+            case 5:
+                return Color.orange;
+            case 6:
+                return Color.cyan;
+            case 7:
+                return Color.magenta;
+            case 8:
+                return Color.darkGray;
+        }
+
+        return Color.black;
     }
 
 }

@@ -4,12 +4,14 @@ package minesweeper;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 
 
 public class GUI extends JFrame implements ActionListener, MouseListener {
@@ -30,6 +32,7 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
     static int t = 0;
     static Timer timer;
     static boolean firstClick = false;
+    static int fontSize;
 
 
     // Pattern singleton
@@ -42,11 +45,11 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
 
 
     private GUI(Level l) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        // try {
+        //     UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        // } catch (Exception ex) {
+        //     ex.printStackTrace();
+        // }
 
         super.setIconImage(new ImageIcon(getClass().getResource("/Icons/Icon.png")).getImage());
 
@@ -92,16 +95,19 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
             case "EASY":
                 super.setSize(400, 450);  // width and height
                 super.setMinimumSize(new Dimension(400, 450));
+                fontSize = 22;
                 break;
 
             case "MEDIUM":
-                super.setSize(520, 520);  // width and height
+                super.setSize(700, 700);  // width and height
                 super.setMinimumSize(new Dimension(500, 500));
+                fontSize = 20;
                 break;
 
             case "HARD":
-                super.setSize(700, 600);  // width and height
+                super.setSize(700, 800);  // width and height
                 super.setMinimumSize(new Dimension(700, 700));
+                fontSize = 16;
                 break;
         }
 
@@ -132,6 +138,8 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
                 field[i][j].setOpaque(true);
                 field[i][j].addActionListener(this);
                 field[i][j].addMouseListener(this);
+                //field[i][j].setBorder(new EmptyBorder(0, 0, 0, 0));
+                field[i][j].setBorder(new LineBorder(Color.black));
                 matrixPanel.add(field[i][j]);
             }
 
@@ -178,8 +186,7 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
             return;
         }
 
-        if(field[i][j].getIcon() != null)
-            return;
+        if(field[i][j].getIcon() != null) return;
 
         if(firstClick == false) {
             if(matrix[i][j] != 0)
@@ -189,18 +196,18 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
             firstClick = true;
         }
 
-        printCell(i, j);
+        printCell(i, j, false);
         field[i][j].setEnabled(false);
-        field[i][j].setBackground(Color.GRAY);
+        field[i][j].setBackground(Color.lightGray);
         counter++;
 
         switch(matrix[i][j]) {
             case -1:
                 for(int k = 0; k < level.getRows(); k++)
                     for(int z = 0; z < level.getColumns(); z++) {
-                        printCell(k, z);
+                        printCell(k, z, true);
                         field[k][z].setEnabled(false);
-                        field[k][z].setBackground(Color.DARK_GRAY);
+                        field[k][z].setBackground(Color.lightGray);
 
                         if(matrix[k][z] == -1)
                             field[k][z].setBackground(Color.RED);
@@ -237,7 +244,7 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
 
 
     // Method for printing the cell with position (i, j)
-    private void printCell(int i, int j) {
+    private void printCell(int i, int j, boolean showBombsOnly) {
         switch (matrix[i][j]) {
             case -1:
                 ImageIcon img = new ImageIcon(getClass().getResource("/Icons/Bomb.png"));
@@ -247,15 +254,22 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
                 field[i][j].setText("");
                 break;
             default:
-                field[i][j].setText(matrix[i][j] + "");
+                if (!showBombsOnly) {
+                    JLabel tmpLabel = new JLabel(matrix[i][j] + "");
+                    JPanel tmpPanel = new JPanel();
+                    tmpPanel.setBackground(new Color(0, 0, 0, 0));
+                    tmpLabel.setForeground(Field.getColor(matrix[i][j]));
+                    tmpLabel.setFont(new Font("Arial", Font.BOLD, fontSize));
+                    field[i][j].add(tmpPanel);
+                    tmpPanel.add(tmpLabel, BorderLayout.CENTER);
+                }
                 break;
         }
     }
 
 
-    // Method to show the neighbour cells of a cell with value 0
+    // Method to show the neighbours of a cell with value 0
     private void showNeighbours(int i, int j) {
-
         if(field[i][j].isEnabled() && matrix[i][j] == 0) {
             field[i][j].setText("");
 
@@ -264,7 +278,7 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
         } else return;
 
         field[i][j].setIcon(null);
-        field[i][j].setBackground(Color.GRAY);
+        field[i][j].setBackground(Color.lightGray);
         field[i][j].setEnabled(false);
 
         for(int r = i-1; r <= i+1; r++) {
@@ -278,9 +292,17 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
                         if(field[r][c].getIcon() != null)
                             markersCounterLabel.setText(++markersCounter + "");
 
+                        JLabel tmpLabel = new JLabel(matrix[r][c] + "");
+                        tmpLabel.setForeground(Field.getColor(matrix[r][c]));
+                        tmpLabel.setFont(new Font("Arial", Font.BOLD, fontSize));
+
+                        // field[r][c].setText(matrix[r][c] + "");
                         field[r][c].setIcon(null);
-                        field[r][c].setBackground(Color.GRAY);
-                        field[r][c].setText(matrix[r][c] + "");
+                        field[r][c].setBackground(Color.lightGray);
+                        JPanel tmpPanel = new JPanel();
+                        tmpPanel.setBackground(new Color(0, 0, 0, 0));
+                        field[r][c].add(tmpPanel);
+                        tmpPanel.add(tmpLabel, BorderLayout.CENTER);
                         field[r][c].setEnabled(false);
                         counter++;
                     }
@@ -303,6 +325,7 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
                 field[n][m].setIcon(null);
                 field[n][m].setText("");
                 field[n][m].setBackground(null);
+                field[n][m].removeAll();
             }
         }
 
@@ -313,7 +336,7 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
         resetButton.setEnabled(true);
         counter = 0;
         markersCounter = level.getMines();
-        markersCounterLabel.setText(markersCounter +"");
+        markersCounterLabel.setText(markersCounter + "");
         t = 0;
         timer.stop();
         timeLabel.setText("0");
@@ -329,11 +352,11 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
         if(e.getButton() == 3 && button.isEnabled()) {
             if(button.getIcon() == null) {
                 button.setIcon(img);
-                markersCounterLabel.setText(--markersCounter +"");
+                markersCounterLabel.setText(--markersCounter + "");
             }
             else {
                 button.setIcon(null);
-                markersCounterLabel.setText(++markersCounter +"");
+                markersCounterLabel.setText(++markersCounter + "");
             }
         }
     }
@@ -343,7 +366,7 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
     public void mousePressed(MouseEvent e) {
         JButton button = (JButton)e.getComponent();
 
-        if(button.isEnabled())
+        if(button.isEnabled() && button.getIcon() == null)
             resetButton.setIcon(new ImageIcon(getClass().getResource("/Icons/OpenMouthFace.png")));
     }
 
