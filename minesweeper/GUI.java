@@ -244,7 +244,7 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
 
 
     // Method for printing the cell with position (i, j)
-    private void printCell(int i, int j, boolean showBombsOnly) {
+    private void printCell(int i, int j, boolean showMinesOnly) {
         switch (matrix[i][j]) {
             case -1:
                 ImageIcon img = new ImageIcon(getClass().getResource("/Icons/Bomb.png"));
@@ -254,7 +254,7 @@ public class GUI extends JFrame implements ActionListener, MouseListener {
                 field[i][j].setText("");
                 break;
             default:
-                if (!showBombsOnly) {
+                if (!showMinesOnly) {
                     JLabel tmpLabel = new JLabel(matrix[i][j] + "");
                     JPanel tmpPanel = new JPanel();
                     tmpPanel.setBackground(new Color(0, 0, 0, 0));
