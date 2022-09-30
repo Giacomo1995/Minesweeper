@@ -67,7 +67,7 @@ public class Field {
     }
 
 
-    // Method to returns the color relative to the number of bombs around a specific cell
+    // Method to return the color relative to the number of bombs around a specific cell
     protected static Color getColor(int n) {
         switch(n) {
             case 1:
